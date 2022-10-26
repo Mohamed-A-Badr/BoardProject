@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'boards',
 ]
 
@@ -118,7 +119,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS=[
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 # Default primary key field type
