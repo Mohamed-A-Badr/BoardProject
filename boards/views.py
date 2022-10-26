@@ -43,23 +43,6 @@ def new_topic(request, board_id):
             return redirect('boards_topics', board_id=board.pk)
     else:
         form = NewTopicForm()
-
-        # subject = request.POST['subject']
-        # message = request.POST['message']
-        # user = User.objects.first()
-
-        # topic = Topic.objects.create(
-        #     subject=subject,
-        #     board=board,
-        #     created_by=user
-        # )
-
-        # post = Post.objects.create(
-        #     message=message,
-        #     topic=topic,
-        #     created_by=user
-        # )
-        # return redirect('boards_topics', board_id=board.pk)
     return render(request, 'new_topic.html', {'board': board, 'form': form})
 
 
