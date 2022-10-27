@@ -16,10 +16,6 @@ def home(request):
 
 
 def board_topics(request, board_id):
-    # try:
-    #     board = Board.objects.get(pk=board_id)
-    # except Board.DoesNotExist:
-    #     raise Http404
     board = get_object_or_404(Board, pk=board_id)
     return render(request, 'topics.html', {'board': board})
 
@@ -48,5 +44,7 @@ def new_topic(request, board_id):
     return render(request, 'new_topic.html', {'board': board, 'form': form})
 
 
-def about(request):
-    return HttpResponse("Hello, about")
+def topic_posts(request, board_id, topic_id):
+    # board__pk return all the topics related to this primary key
+    topic = get_object_or_404(Topic, board__pk=board_id, pk=topic_id)
+    return render(request, 'topic_posts.html', {'topic': topic})
