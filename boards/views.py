@@ -5,7 +5,7 @@ from django.urls import is_valid_path
 from .models import Board
 from django.contrib.auth.models import User
 from .models import Topic, Post
-from .forms import NewTopicForm
+from .forms import NewTopicForm, PostForm
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
@@ -48,3 +48,20 @@ def topic_posts(request, board_id, topic_id):
     # board__pk return all the topics related to this primary key
     topic = get_object_or_404(Topic, board__pk=board_id, pk=topic_id)
     return render(request, 'topic_posts.html', {'topic': topic})
+
+
+@login_required
+def reply_topic(request, board_id, topic_id):
+    topic = get_object_or_404(Topic, board__pk=board_id, pk=topic_id)
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.topic = topic
+            post.created_by = request.user
+            post.save()
+
+            return redirect('topic_posts', board_id=board_id, topic_id=topic_id)
+    else:
+        form = PostForm()
+    return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
