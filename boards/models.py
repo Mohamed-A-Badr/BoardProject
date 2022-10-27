@@ -1,5 +1,6 @@
 from email.policy import default
 from os import truncate
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import Truncator
@@ -37,6 +38,9 @@ class Post(models.Model):
     created_by = models.ForeignKey(
         User, related_name='posts', on_delete=models.CASCADE)
     created_dt = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(
+        User, null=True, related_name='+', on_delete=models.CASCADE)
+    updated_dt = models.DateTimeField(null=True)
 
     def __str__(self):
         truncated_message = Truncator(self.message)

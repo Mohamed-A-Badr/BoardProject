@@ -1,4 +1,5 @@
 from email import message
+from time import time
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 from django.urls import is_valid_path
@@ -8,12 +9,20 @@ from .models import Topic, Post
 from .forms import NewTopicForm, PostForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.views.generic import UpdateView, ListView
+from django.utils import timezone
+from django.utils.decorators import method_decorator
 # Create your views here.
 
 
-def home(request):
-    boards = Board.objects.all()
-    return render(request, 'home.html', {'boards': boards})
+# def home(request):
+#     boards = Board.objects.all()
+#     return render(request, 'home.html', {'boards': boards})
+
+class BoardListView(ListView):
+    model = Board
+    context_object_name = 'boards'
+    template_name = 'home.html'
 
 
 def board_topics(request, board_id):
@@ -71,3 +80,25 @@ def reply_topic(request, board_id, topic_id):
     else:
         form = PostForm()
     return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
+
+
+@method_decorator(login_required, name='dispatch')
+class PostUpdateView(UpdateView):
+    model = Post
+
+    fields = ('message',)
+    template_name = 'edit_post.html'
+    # ? instead of passing a parameter we put it here
+    pk_url_kwarg = 'post_id'
+    # ? like {'post':post} that send with render() method
+    context_object_name = 'post'
+
+    # ? if every thing goes write then change the following
+    # ? fields in my database
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.updated_by = self.request.user
+        post.updated_dt = timezone.now()
+        post.save()
+        return redirect('topic_posts', board_id=post.topic.board.pk, topic_id=post.topic.pk)
