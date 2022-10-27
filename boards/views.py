@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 # def home(request):
 #     boards = Board.objects.all()
 #     return render(request, 'home.html', {'boards': boards})
-
+# ? we convert home view from function view to generic view
 class BoardListView(ListView):
     model = Board
     context_object_name = 'boards'
