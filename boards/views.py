@@ -12,13 +12,12 @@ from django.db.models import Count
 from django.views.generic import UpdateView, ListView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 # Create your views here.
 
-
-# def home(request):
-#     boards = Board.objects.all()
-#     return render(request, 'home.html', {'boards': boards})
 # ? we convert home view from function view to generic view
+
+
 class BoardListView(ListView):
     model = Board
     context_object_name = 'boards'
@@ -27,8 +26,16 @@ class BoardListView(ListView):
 
 def board_topics(request, board_id):
     board = get_object_or_404(Board, pk=board_id)
-    topics = board.topics.order_by(
+    queryset = board.topics.order_by(
         '-created_dt').annotate(comments=Count('posts'))
+    page = request.GET.get('page', 1)
+    paginator = Paginator(queryset, 20)
+    try:
+        topics = paginator.page(1)
+    except PageNotAnInteger:
+        topics = paginator.page(1)
+    except EmptyPage:
+        topics = paginator.page(paginator.num_pages)
 
     return render(request, 'topics.html', {'board': board, 'topics': topics})
 
